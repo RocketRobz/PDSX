@@ -172,7 +172,7 @@ int main(int argc, char **argv) {
 			if (!textPrinted) {
 				printf("PDSX v0.1.0 by Robz8\n");
 				printf("\n");
-				printf("START: Start/Pause simulation\n");
+				printf("START: Start/Pause\n");
 				printf("SELECT: Swap screens\n");
 				textPrinted = true;
 			}

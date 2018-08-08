@@ -30,6 +30,7 @@
 #include <gl2d.h>
 
 #include "scesplash.h"
+#include "psxsplash.h"
 
 #include "graphics/graphics.h"
 
@@ -41,11 +42,10 @@
 mm_sound_effect snd_sce;
 mm_sound_effect snd_playstation;
 
-bool renderScreens = false;
+bool screenSwap = false;
 bool fadeType = true;		// false = out, true = in
 
 int gameMode = 0;
-bool allowPause = true;
 bool simulationRunning = false;
 bool textPrinted = false;
 
@@ -98,12 +98,41 @@ void vCountHandler(void) {
 	scanKeys();
 	int pressed = keysDownRepeat();
 
-	if ((pressed & KEY_START) && allowPause) {
+	if (pressed & KEY_START) {
 		simulationRunning = !simulationRunning;
 		if (simulationRunning) {
-			powerOff(PM_BACKLIGHT_BOTTOM);
+			if (screenSwap) {
+				powerOff(PM_BACKLIGHT_TOP);
+			} else {
+				powerOff(PM_BACKLIGHT_BOTTOM);
+			}
+			sceInit();
+			psxInit();
+			consoleClear();
+			gameMode = 0;
 		} else {
-			powerOn(PM_BACKLIGHT_BOTTOM);
+			mmEffectCancelAll();
+			if (screenSwap) {
+				powerOn(PM_BACKLIGHT_TOP);
+			} else {
+				powerOn(PM_BACKLIGHT_BOTTOM);
+			}
+		}
+	}
+	if (pressed & KEY_SELECT) {
+		screenSwap = !screenSwap;
+		if (screenSwap) {
+			if (simulationRunning) {
+				powerOn(PM_BACKLIGHT_BOTTOM);
+				powerOff(PM_BACKLIGHT_TOP);
+			}
+			lcdMainOnBottom();
+		} else {
+			if (simulationRunning) {
+				powerOn(PM_BACKLIGHT_TOP);
+				powerOff(PM_BACKLIGHT_BOTTOM);
+			}
+			lcdMainOnTop();
 		}
 	}
 }
@@ -112,13 +141,8 @@ void vCountHandler(void) {
 int main(int argc, char **argv) {
 //---------------------------------------------------------------------------------
 
-	// Turn off bottom screen backlight
 	powerOn(PM_BACKLIGHT_TOP);
-	if (simulationRunning) {
-		powerOff(PM_BACKLIGHT_BOTTOM);
-	} else {
-		powerOn(PM_BACKLIGHT_BOTTOM);
-	}
+	powerOn(PM_BACKLIGHT_BOTTOM);
 
 	irqSet(IRQ_VCOUNT, vCountHandler);
 	irqEnable(IRQ_VCOUNT);
@@ -134,16 +158,22 @@ int main(int argc, char **argv) {
 
 	while (1) {
 		if (simulationRunning) {
+			textPrinted = false;
 			switch (gameMode) {
 				case 0:
 				default:
 					sceSplash();
 					break;
+				case 1:
+					psxSplash();
+					break;
 			}
 		} else {
 			if (!textPrinted) {
-				printf("PDSX v1.0.0 by Robz8\n");
-				printf("Press START to start simulation.\n");
+				printf("PDSX v0.1.0 by Robz8\n");
+				printf("\n");
+				printf("START: Start/Pause simulation\n");
+				printf("SELECT: Swap screens\n");
 				textPrinted = true;
 			}
 		}

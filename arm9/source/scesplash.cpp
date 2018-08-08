@@ -1,6 +1,6 @@
 #include "scesplash.h"
 
-extern bool allowPause;
+extern int gameMode;
 
 extern mm_sound_effect snd_sce;
 
@@ -20,12 +20,43 @@ static bool sce_triangle_zoomdelay3AddDelay = false;
 
 static bool sce_trianglesFormed = false;
 
+static int sce_loopOnLogo = 0;
+
 extern int sceLogoTexID;
 extern glImage sceLogoImage[(128 / 16) * (48 / 24)];
 
-void sceSplash(void) {
-	allowPause = false;
+void sceInit(void) {
+	sce_music = false;
+	sce_fadeTime[0] = 0;
+	sce_fadeTime[1] = 0;
+	sce_fadedin = false;
 
+	sce_bgColor = 0;	// 185 when faded in
+
+	sce_triangle1_x[0] = 77;
+	sce_triangle1_x[1] = 127;
+	sce_triangle1_y[0] = 95;
+	sce_triangle1_y[1] = 45;
+	sce_triangle1_y[2] = 145;
+	sce_triangle2_x[0] = 177;
+	sce_triangle2_x[1] = 127;
+	sce_triangle2_y[0] = 95;
+	sce_triangle2_y[1] = 45;
+	sce_triangle2_y[2] = 145;
+
+	sce_triangle_zoomdelay[0] = 0;
+	sce_triangle_zoomdelay[1] = 0;
+	sce_triangle_zoomdelay[2] = 0;
+	sce_triangle_zoomdelay[3] = 0;
+	sce_triangle_zoomdelay[4] = 0;
+	sce_triangle_zoomdelay3AddDelay = false;
+
+	sce_trianglesFormed = false;
+
+	sce_loopOnLogo = 0;
+}
+
+void sceSplash(void) {
 	if (!sce_music) {
 		mmEffectEx(&snd_sce);
 		sce_music = true;
@@ -114,7 +145,18 @@ void sceSplash(void) {
 		}
 	}
 
+	sce_loopOnLogo++;
 	swiWaitForVBlank();
+
+	if (sce_loopOnLogo == 60*7) {
+		sce_fadedin = false;
+		for (int i = 185; i >= 0; i -= 10) {
+			sce_bgColor = i;
+			swiWaitForVBlank();
+		}
+		sce_bgColor = 0;
+		gameMode = 1;
+	}
 }
 
 void sceGraphicDisplay(void) {

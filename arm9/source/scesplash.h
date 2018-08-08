@@ -5,6 +5,7 @@
 #include <gl2d.h>
 #include <maxmod9.h>
 
+extern void sceInit(void);
 extern void sceSplash(void);
 extern void sceGraphicDisplay(void);
 

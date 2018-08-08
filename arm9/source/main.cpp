@@ -31,6 +31,7 @@
 
 #include "scesplash.h"
 #include "psxsplash.h"
+#include "psxmenu.h"
 
 #include "graphics/graphics.h"
 
@@ -45,7 +46,10 @@ mm_sound_effect snd_playstation;
 bool screenSwap = false;
 bool fadeType = true;		// false = out, true = in
 
+int pressed = 0;
+
 int gameMode = 0;
+int modeOrder = 0;	// 0 = SCE -> PS, 1 = SCE -> Main Menu, 2 = PS
 bool simulationRunning = false;
 bool textPrinted = false;
 
@@ -96,7 +100,7 @@ void doPause(int x, int y) {
 
 void vCountHandler(void) {
 	scanKeys();
-	int pressed = keysDownRepeat();
+	pressed = keysDownRepeat();
 
 	if (pressed & KEY_START) {
 		simulationRunning = !simulationRunning;
@@ -108,8 +112,13 @@ void vCountHandler(void) {
 			}
 			sceInit();
 			psxInit();
+			psxMenuInit();
 			consoleClear();
-			gameMode = 0;
+			if (modeOrder == 2) {
+				gameMode = 1;
+			} else {
+				gameMode = 0;
+			}
 		} else {
 			mmEffectCancelAll();
 			if (screenSwap) {
@@ -133,6 +142,20 @@ void vCountHandler(void) {
 				powerOff(PM_BACKLIGHT_BOTTOM);
 			}
 			lcdMainOnTop();
+		}
+	}
+	if (!simulationRunning) {
+		if (pressed & KEY_LEFT) {
+			modeOrder--;
+			if (modeOrder < 0) modeOrder = 2;
+			consoleClear();
+			textPrinted = false;	// Reprint text
+		}
+		if (pressed & KEY_RIGHT) {
+			modeOrder++;
+			if (modeOrder > 2) modeOrder = 0;
+			consoleClear();
+			textPrinted = false;	// Reprint text
 		}
 	}
 }
@@ -167,12 +190,30 @@ int main(int argc, char **argv) {
 				case 1:
 					psxSplash();
 					break;
+				case 2:
+					psxMenu();
+					break;
 			}
 		} else {
 			if (!textPrinted) {
-				printf("PDSX v0.1.0 by Robz8\n");
+				printf("PDSX v0.2.0 by Robz8\n");
 				printf("\n");
-				printf("START: Start/Pause\n");
+				printf("Screen mode order:\n");
+				switch (modeOrder) {
+					case 0:
+					default:
+						printf("SCE -> Playstation\n");
+						break;
+					case 1:
+						printf("SCE -> Main Menu\n");
+						break;
+					case 2:
+						printf("Playstation\n");
+						break;
+				}
+				printf("\n");
+				printf("LEFT/RIGHT: Select order\n");
+				printf("START: Start/Stop\n");
 				printf("SELECT: Swap screens\n");
 				textPrinted = true;
 			}

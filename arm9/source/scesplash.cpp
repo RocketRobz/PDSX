@@ -1,6 +1,7 @@
 #include "scesplash.h"
 
 extern int gameMode;
+extern int modeOrder;
 
 extern mm_sound_effect snd_sce;
 
@@ -150,12 +151,16 @@ void sceSplash(void) {
 
 	if (sce_loopOnLogo == 60*7) {
 		sce_fadedin = false;
-		for (int i = 185; i >= 0; i -= 10) {
-			sce_bgColor = i;
-			swiWaitForVBlank();
+		if (modeOrder == 1) {
+			gameMode = 2;	// Go to Main Menu
+		} else {
+			for (int i = 185; i >= 0; i -= 10) {
+				sce_bgColor = i;
+				swiWaitForVBlank();
+			}
+			sce_bgColor = 0;
+			gameMode = 1;	// Go to PSX splash
 		}
-		sce_bgColor = 0;
-		gameMode = 1;
 	}
 }
 

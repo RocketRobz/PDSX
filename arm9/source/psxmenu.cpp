@@ -11,6 +11,7 @@ extern int blueBgTexID, mainMenuTexID;
 extern glImage blueBgImage[(128 / 16) * (192 / 16)];
 extern glImage mainMenuImage[(128 / 16) * (32 / 16)];
 extern glImage menuCursorImage[(16 / 16) * (16 / 16)];
+extern glImage memandcdImage[(128 / 16) * (64 / 16)];
 
 void psxMenuInit(void) {
 	musicStopped = false;
@@ -50,8 +51,12 @@ void psxMenuGraphicDisplay(void) {
 	if (displayMenuGraphics) {
 		glSprite(181, 17, GL_FLIP_NONE, mainMenuImage);
 		if (menu_cursor == 0) {
+			glSprite(10, 87, GL_FLIP_NONE, &memandcdImage[0]);			// Zoomed-in "Memory Card"
+			glSprite(26, 127, GL_FLIP_NONE, &memandcdImage[3]);		// Zoomed-out "CD Player"
 			glSprite(66, 94, GL_FLIP_NONE, menuCursorImage);
 		} else {
+			glSprite(10, 87, GL_FLIP_NONE, &memandcdImage[1]);			// Zoomed-out "Memory Card"
+			glSprite(26, 127, GL_FLIP_NONE, &memandcdImage[2]);		// Zoomed-in "CD Player"
 			glSprite(66, 135, GL_FLIP_NONE, menuCursorImage);
 		}
 	}

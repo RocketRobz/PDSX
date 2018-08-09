@@ -64,7 +64,7 @@ void sceSplash(void) {
 	}
 
 	if (!sce_fadedin) {
-		if (sce_fadeTime[0] == 30) {
+		if (sce_fadeTime[0] == 10) {
 			if (sce_fadeTime[1] == 60) {
 				sce_fadedin = true;
 			} else {
@@ -149,7 +149,7 @@ void sceSplash(void) {
 	sce_loopOnLogo++;
 	swiWaitForVBlank();
 
-	if (sce_loopOnLogo == 60*7) {
+	if (sce_loopOnLogo == 60*6) {
 		sce_fadedin = false;
 		if (modeOrder == 1) {
 			gameMode = 2;	// Go to Main Menu

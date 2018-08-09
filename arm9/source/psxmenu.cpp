@@ -4,6 +4,9 @@
 static bool musicStopped = false;
 static bool displayMenuGraphics = false;
 static int menu_cursor = 0;
+static bool menu_textFade = false;
+
+static int menu_textFadeColor = 255;	// 0 when faded out
 
 extern int pressed;
 
@@ -18,6 +21,9 @@ void psxMenuInit(void) {
 	musicStopped = false;
 	displayMenuGraphics = false;
 	menu_cursor = 0;
+	menu_textFade = false;
+
+	menu_textFadeColor = 255;
 }
 
 void psxMenu(void) {
@@ -32,15 +38,27 @@ void psxMenu(void) {
 	}
 
 	displayMenuGraphics = true;
-	
-	if (pressed & KEY_UP) {
-		menu_cursor--;
-		if (menu_cursor < 0) menu_cursor = 0;
-	}
 
-	if (pressed & KEY_DOWN) {
-		menu_cursor++;
-		if (menu_cursor > 1) menu_cursor = 1;
+	if (menu_textFade) {
+		menu_textFadeColor -= 10;
+		if (menu_textFadeColor < 0) {
+			menu_textFadeColor = 255;
+			menu_textFade = false;
+		}
+	} else {
+		if (pressed & KEY_UP) {
+			menu_cursor--;
+			if (menu_cursor < 0) menu_cursor = 0;
+		}
+
+		if (pressed & KEY_DOWN) {
+			menu_cursor++;
+			if (menu_cursor > 1) menu_cursor = 1;
+		}
+
+		if (pressed & KEY_A) {
+			menu_textFade = true;
+		}
 	}
 
 	swiWaitForVBlank();
@@ -56,13 +74,17 @@ void psxMenuGraphicDisplay(void) {
 		glSprite(22, 79, GL_FLIP_NONE, inkedButtonImage);
 		glSprite(22, 119, GL_FLIP_NONE, inkedButtonImage);
 		if (menu_cursor == 0) {
+			glColor(RGB15(menu_textFadeColor/8, menu_textFadeColor/8, menu_textFadeColor/8));
 			glSprite(10, 87, GL_FLIP_NONE, &memandcdImage[0]);			// Zoomed-in "Memory Card"
+			glColor(RGB15(31, 31, 31));
 			glSprite(26, 127, GL_FLIP_NONE, &memandcdImage[3]);		// Zoomed-out "CD Player"
-			glSprite(66, 94, GL_FLIP_NONE, menuCursorImage);
+			if (!menu_textFade) glSprite(66, 94, GL_FLIP_NONE, menuCursorImage);
 		} else {
 			glSprite(10, 87, GL_FLIP_NONE, &memandcdImage[1]);			// Zoomed-out "Memory Card"
+			glColor(RGB15(menu_textFadeColor/8, menu_textFadeColor/8, menu_textFadeColor/8));
 			glSprite(26, 127, GL_FLIP_NONE, &memandcdImage[2]);		// Zoomed-in "CD Player"
-			glSprite(66, 135, GL_FLIP_NONE, menuCursorImage);
+			glColor(RGB15(31, 31, 31));
+			if (!menu_textFade) glSprite(66, 135, GL_FLIP_NONE, menuCursorImage);
 		}
 	}
 	glColor(RGB15(31, 31, 31));

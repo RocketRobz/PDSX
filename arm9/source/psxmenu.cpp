@@ -9,6 +9,7 @@ extern int pressed;
 
 extern int blueBgTexID, mainMenuTexID;
 extern glImage blueBgImage[(128 / 16) * (192 / 16)];
+extern glImage blueBallsImage[(64 / 16) * (128 / 64)];
 extern glImage mainMenuImage[(128 / 16) * (32 / 16)];
 extern glImage menuCursorImage[(16 / 16) * (16 / 16)];
 extern glImage memandcdImage[(128 / 16) * (64 / 16)];
@@ -49,6 +50,8 @@ void psxMenuGraphicDisplay(void) {
 	glSprite(0, 0, GL_FLIP_NONE, blueBgImage);
 	glSprite(128, 0, GL_FLIP_H, blueBgImage);
 	if (displayMenuGraphics) {
+		glSprite(39, 6, GL_FLIP_NONE, &blueBallsImage[0]);
+		glSprite(83, 128, GL_FLIP_NONE, &blueBallsImage[1]);
 		glSprite(181, 17, GL_FLIP_NONE, mainMenuImage);
 		if (menu_cursor == 0) {
 			glSprite(10, 87, GL_FLIP_NONE, &memandcdImage[0]);			// Zoomed-in "Memory Card"

@@ -16,6 +16,8 @@ extern int pressed;
 
 extern int blueBgTexID, gridBgTexID;
 extern glImage gridBgImage[(256 / 16) * (192 / 16)];
+extern glImage memCardImage[(64 / 16) * (64 / 16)];
+extern glImage cdImage[(64 / 16) * (64 / 16)];
 extern glImage menuCursorImage[(16 / 16) * (32 / 16)];
 
 extern void drawBG(glImage *images);
@@ -90,13 +92,15 @@ void psoneMenu(void) {
 void psoneMenuGraphicDisplay(void) {
 	drawBG(gridBgImage);
 	if (oneDisplayMenuGraphics) {
+		if (oneMenu_cursor == 0) glColor(RGB15(oneMenu_textFadeColor/8, oneMenu_textFadeColor/8, oneMenu_textFadeColor/8));
+		glSprite(64, 84, GL_FLIP_NONE, memCardImage);
+		glColor(RGB15(31, 31, 31));
+		if (oneMenu_cursor == 1) glColor(RGB15(oneMenu_textFadeColor/8, oneMenu_textFadeColor/8, oneMenu_textFadeColor/8));
+		glSprite(154, 83, GL_FLIP_NONE, cdImage);
+		glColor(RGB15(31, 31, 31));
 		if (oneMenu_cursor == 0) {
-			//glColor(RGB15(oneMenu_textFadeColor/8, oneMenu_textFadeColor/8, oneMenu_textFadeColor/8));
-			glColor(RGB15(31, 31, 31));
 			if (!oneMenu_textFade) glSprite(82, 132, GL_FLIP_NONE, &menuCursorImage[1]);
 		} else {
-			//glColor(RGB15(oneMenu_textFadeColor/8, oneMenu_textFadeColor/8, oneMenu_textFadeColor/8));
-			glColor(RGB15(31, 31, 31));
 			if (!oneMenu_textFade) glSprite(178, 132, GL_FLIP_NONE, &menuCursorImage[1]);
 		}
 	}

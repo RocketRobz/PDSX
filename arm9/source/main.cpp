@@ -241,11 +241,11 @@ int main(int argc, char **argv) {
 				} else {
 					printf(" ");
 				}
-				printf("Console:\n    ");
+				printf("BIOS: ");
 				if (menu_psConsoleModel == 1) {
-					printf("PSone\n");
+					printf("SCPH101 (PSone)\n");
 				} else {
-					printf("OG Playstation\n");
+					printf("SCPH1001 (OG PS1)\n");
 				}
 				printf("\n");
 				if (cursorPosition == 1) {
@@ -253,7 +253,7 @@ int main(int argc, char **argv) {
 				} else {
 					printf(" ");
 				}
-				printf("Screen mode order:\n    ");
+				printf("Screen mode order:\n  ");
 				switch (modeOrder) {
 					case 0:
 					default:
@@ -271,7 +271,7 @@ int main(int argc, char **argv) {
 				if (cursorPosition == 1) {
 					printf("LEFT/RIGHT: Select order\n");
 				} else {
-					printf("LEFT/RIGHT: Set console\n");
+					printf("LEFT/RIGHT: Select BIOS\n");
 				}
 				printf("START: Start/Stop\n");
 				printf("SELECT: Swap screens\n");

@@ -25,8 +25,8 @@ static bool sce_trianglesFormed = false;
 
 static int sce_loopOnLogo = 0;
 
-extern int sceLogoTexID;
 extern glImage sceLogoImage[(128 / 16) * (96 / 24)];
+extern glImage sceTmImage[(16 / 16) * (16 / 24)];
 
 void sceInit(void) {
 	sce_music = false;
@@ -196,6 +196,7 @@ void sceGraphicDisplay(void) {
 			} else {
 				glSprite(80, 23, GL_FLIP_NONE, &sceLogoImage[0]);
 				glSprite(80, 154, GL_FLIP_NONE, &sceLogoImage[1]);
+				glSprite(136, 144, GL_FLIP_NONE, sceTmImage);
 			}
 		}
 	}

@@ -32,6 +32,7 @@
 #include "scesplash.h"
 #include "psxsplash.h"
 #include "psxmenu.h"
+#include "psonemenu.h"
 
 #include "graphics/graphics.h"
 
@@ -44,14 +45,17 @@ mm_sound_effect snd_sce;
 mm_sound_effect snd_playstation;
 
 bool screenSwap = false;
-bool fadeType = true;		// false = out, true = in
+bool fadeType = true;				// false = out, true = in
 
 int pressed = 0;
 
 int gameMode = 0;
-int modeOrder = 0;	// 0 = SCE -> PS, 1 = SCE -> Main Menu, 2 = PS
+int modeOrder = 0;					// 0 = SCE -> PS, 1 = SCE -> Main Menu, 2 = PS
+int psConsoleModel = 0;				// 0 = Playstation -> PS, 1 = PSone
+int menu_psConsoleModel = 0;
 bool simulationRunning = false;
 bool textPrinted = false;
+int cursorPosition = 0;
 
 void InitSound() {
 	mmInitDefaultMem((mm_addr)soundbank_bin);
@@ -112,13 +116,15 @@ void vCountHandler(void) {
 			}
 			sceInit();
 			psxInit();
-			psxMenuInit();
 			consoleClear();
 			if (modeOrder == 2) {
 				gameMode = 1;
 			} else {
 				gameMode = 0;
 			}
+			psConsoleModel = menu_psConsoleModel;
+			psxMenuInit();
+			psoneMenuInit();
 		} else {
 			mmEffectCancelAll();
 			if (screenSwap) {
@@ -145,15 +151,43 @@ void vCountHandler(void) {
 		}
 	}
 	if (!simulationRunning) {
+		if (pressed & KEY_UP) {
+			cursorPosition--;
+			if (cursorPosition < 0) cursorPosition = 1;
+			consoleClear();
+			textPrinted = false;	// Reprint text
+		}
+		if (pressed & KEY_DOWN) {
+			cursorPosition++;
+			if (cursorPosition > 1) cursorPosition = 0;
+			consoleClear();
+			textPrinted = false;	// Reprint text
+		}
 		if (pressed & KEY_LEFT) {
-			modeOrder--;
-			if (modeOrder < 0) modeOrder = 2;
+			switch (cursorPosition) {
+				case 0:
+					menu_psConsoleModel--;
+					if (menu_psConsoleModel < 0) menu_psConsoleModel = 1;
+					break;
+				case 1:
+					modeOrder--;
+					if (modeOrder < 0) modeOrder = 2;
+					break;
+			}
 			consoleClear();
 			textPrinted = false;	// Reprint text
 		}
 		if (pressed & KEY_RIGHT) {
-			modeOrder++;
-			if (modeOrder > 2) modeOrder = 0;
+			switch (cursorPosition) {
+				case 0:
+					menu_psConsoleModel++;
+					if (menu_psConsoleModel > 1) menu_psConsoleModel = 0;
+					break;
+				case 1:
+					modeOrder++;
+					if (modeOrder > 2) modeOrder = 0;
+					break;
+			}
 			consoleClear();
 			textPrinted = false;	// Reprint text
 		}
@@ -191,14 +225,35 @@ int main(int argc, char **argv) {
 					psxSplash();
 					break;
 				case 2:
-					psxMenu();
+					if (psConsoleModel == 1) {
+						psoneMenu();
+					} else {
+						psxMenu();
+					}
 					break;
 			}
 		} else {
 			if (!textPrinted) {
-				printf("PDSX v0.2.0 by Robz8\n");
+				printf("PDSX v0.3.0 by Robz8\n");
 				printf("\n");
-				printf("Screen mode order:\n");
+				if (cursorPosition == 0) {
+					printf(">");
+				} else {
+					printf(" ");
+				}
+				printf("Console:\n    ");
+				if (menu_psConsoleModel == 1) {
+					printf("PSone\n");
+				} else {
+					printf("OG Playstation\n");
+				}
+				printf("\n");
+				if (cursorPosition == 1) {
+					printf(">");
+				} else {
+					printf(" ");
+				}
+				printf("Screen mode order:\n    ");
 				switch (modeOrder) {
 					case 0:
 					default:
@@ -211,8 +266,13 @@ int main(int argc, char **argv) {
 						printf("Playstation\n");
 						break;
 				}
-				printf("\n");
-				printf("LEFT/RIGHT: Select order\n");
+				printf("\n\n");
+				printf("UP/DOWN: Select option to set\n");
+				if (cursorPosition == 1) {
+					printf("LEFT/RIGHT: Select order\n");
+				} else {
+					printf("LEFT/RIGHT: Set console\n");
+				}
 				printf("START: Start/Stop\n");
 				printf("SELECT: Swap screens\n");
 				textPrinted = true;

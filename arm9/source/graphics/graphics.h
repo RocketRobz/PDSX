@@ -20,6 +20,7 @@
 #pragma once
 
 void initSubSprites(void);
+void drawBG(glImage *images);
 void graphicsInit();
 void loadTitleGraphics();
 void startRendering(bool top);

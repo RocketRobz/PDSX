@@ -55,7 +55,7 @@ extern int psConsoleModel;
 int sceLogoTexID, psxLogoTexID, playstationLogoTexID, sceaTexID;
 int blueBgTexID, blueBallsTexID, mainMenuTexID, inkedButtonTexID, memandcdTexID, menuCursorTexID;
 int gridBgTexID, memCardTexID, cdTexID;
-glImage sceLogoImage[(128 / 16) * (48 / 24)];
+glImage sceLogoImage[(128 / 16) * (96 / 24)];
 glImage psxLogoImage[(128 / 16) * (80 / 16)];
 glImage playstationLogoImage[(128 / 16) * (16 / 16)];
 glImage sceaImage[(256 / 16) * (64 / 16)];
@@ -192,10 +192,10 @@ void graphicsInit()
 							128, // sprite width
 							24, // sprite height
 							128, // bitmap width
-							48, // bitmap height
+							96, // bitmap height
 							GL_RGB16, // texture type for glTexImage2D() in videoGL.h
 							TEXTURE_SIZE_128, // sizeX for glTexImage2D() in videoGL.h
-							TEXTURE_SIZE_64, // sizeY for glTexImage2D() in videoGL.h
+							TEXTURE_SIZE_128, // sizeY for glTexImage2D() in videoGL.h
 							GL_TEXTURE_WRAP_S | GL_TEXTURE_WRAP_T | TEXGEN_OFF | GL_TEXTURE_COLOR0_TRANSPARENT, // param for glTexImage2D() in videoGL.h
 							16, // Length of the palette to use (16 colors)
 							(u16*) logo_scePal, // Load our 16 color tiles palette

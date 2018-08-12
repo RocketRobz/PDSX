@@ -3,6 +3,8 @@
 extern int gameMode;
 extern int modeOrder;
 
+extern int psConsoleModel;					// 0 = Playstation -> PS, 1 = PSone
+
 extern mm_sound_effect snd_sce;
 
 static bool sce_music = false;
@@ -24,7 +26,7 @@ static bool sce_trianglesFormed = false;
 static int sce_loopOnLogo = 0;
 
 extern int sceLogoTexID;
-extern glImage sceLogoImage[(128 / 16) * (48 / 24)];
+extern glImage sceLogoImage[(128 / 16) * (96 / 24)];
 
 void sceInit(void) {
 	sce_music = false;
@@ -188,8 +190,13 @@ void sceGraphicDisplay(void) {
 								sce_triangle1_x[1], sce_triangle1_y[2],
 								RGB15(184/8, 14/8, 9/8), RGB15(189/8, 144/8, 0/8), RGB15(189/8, 144/8, 0/8));
 		if (sce_trianglesFormed) {
-			glSprite(80, 23, GL_FLIP_NONE, &sceLogoImage[0]);
-			glSprite(80, 154, GL_FLIP_NONE, &sceLogoImage[1]);
+			if (psConsoleModel == 1) {
+				glSprite(88, 26, GL_FLIP_NONE, &sceLogoImage[2]);
+				glSprite(88, 150, GL_FLIP_NONE, &sceLogoImage[3]);
+			} else {
+				glSprite(80, 23, GL_FLIP_NONE, &sceLogoImage[0]);
+				glSprite(80, 154, GL_FLIP_NONE, &sceLogoImage[1]);
+			}
 		}
 	}
 	glColor(RGB15(31, 31, 31));

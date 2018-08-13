@@ -151,16 +151,16 @@ void vBlankHandler()
 
 	glBegin2D();
 	{
-		if (gameMode == 0) {
-			sceGraphicDisplay();
-		} else if (gameMode == 1) {
+		if (gameMode == 1) {
 			psxGraphicDisplay();
-		} else {
+		} else if (gameMode == 2) {
 			if (psConsoleModel == 1) {
 				psoneMenuGraphicDisplay();
 			} else {
 				psxMenuGraphicDisplay();
 			}
+		} else {
+			sceGraphicDisplay();
 		}
 	}
 	glEnd2D();

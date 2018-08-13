@@ -49,12 +49,14 @@ bool fadeType = true;				// false = out, true = in
 
 int pressed = 0;
 
-int gameMode = 0;
+int gameMode = -1;
+int gameModeBuffer = 0;
 int modeOrder = 0;					// 0 = SCE -> PS, 1 = SCE -> Main Menu, 2 = PS
 int psConsoleModel = 0;				// 0 = Playstation -> PS, 1 = PSone
 int menu_psConsoleModel = 0;
 bool simulationRunning = false;
 bool textPrinted = false;
+int blackScreenDelay = 0;
 int cursorPosition = 0;
 
 void InitSound() {
@@ -114,13 +116,15 @@ void vCountHandler(void) {
 			} else {
 				powerOff(PM_BACKLIGHT_BOTTOM);
 			}
+			blackScreenDelay = 0;
 			sceInit();
 			psxInit();
 			consoleClear();
+			gameMode = -1;
 			if (modeOrder == 2) {
-				gameMode = 1;
+				gameModeBuffer = 1;
 			} else {
-				gameMode = 0;
+				gameModeBuffer = 0;
 			}
 			psConsoleModel = menu_psConsoleModel;
 			psxMenuInit();
@@ -217,6 +221,13 @@ int main(int argc, char **argv) {
 		if (simulationRunning) {
 			textPrinted = false;
 			switch (gameMode) {
+				case -1:
+					blackScreenDelay++;
+					if (blackScreenDelay == 60) {
+						gameMode = gameModeBuffer;
+					}
+					swiWaitForVBlank();
+					break;
 				case 0:
 				default:
 					sceSplash();

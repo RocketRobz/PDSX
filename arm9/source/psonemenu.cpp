@@ -16,6 +16,7 @@ extern int pressed;
 
 extern int blueBgTexID, gridBgTexID;
 extern glImage gridBgImage[(256 / 16) * (192 / 16)];
+extern glImage memandcdButtonImage[(128 / 16) * (64 / 24)];
 extern glImage memCardImage[(64 / 16) * (64 / 16)];
 extern glImage cdImage[(64 / 16) * (64 / 16)];
 extern glImage menuCursorImage[(16 / 16) * (32 / 16)];
@@ -92,6 +93,8 @@ void psoneMenu(void) {
 void psoneMenuGraphicDisplay(void) {
 	drawBG(gridBgImage);
 	if (oneDisplayMenuGraphics) {
+		glSprite(43, 38, GL_FLIP_NONE, &memandcdButtonImage[0]);
+		glSprite(139, 38, GL_FLIP_NONE, &memandcdButtonImage[1]);
 		if (oneMenu_cursor == 0) glColor(RGB15(oneMenu_textFadeColor/8, oneMenu_textFadeColor/8, oneMenu_textFadeColor/8));
 		glSprite(64, 84, GL_FLIP_NONE, memCardImage);
 		glColor(RGB15(31, 31, 31));

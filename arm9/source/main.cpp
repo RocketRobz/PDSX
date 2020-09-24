@@ -104,10 +104,7 @@ void doPause(int x, int y) {
 	scanKeys();
 }
 
-void vCountHandler(void) {
-	scanKeys();
-	pressed = keysDownRepeat();
-
+void simulationControls(void) {
 	if (pressed & KEY_START) {
 		simulationRunning = !simulationRunning;
 		if (simulationRunning) {
@@ -205,9 +202,6 @@ int main(int argc, char **argv) {
 	powerOn(PM_BACKLIGHT_TOP);
 	powerOn(PM_BACKLIGHT_BOTTOM);
 
-	irqSet(IRQ_VCOUNT, vCountHandler);
-	irqEnable(IRQ_VCOUNT);
-
 	InitSound();	
 	graphicsInit();
 	//fontInit();
@@ -218,6 +212,9 @@ int main(int argc, char **argv) {
 	consoleClear();
 
 	while (1) {
+		scanKeys();
+		pressed = keysDown();
+
 		if (simulationRunning) {
 			textPrinted = false;
 			switch (gameMode) {
@@ -226,7 +223,6 @@ int main(int argc, char **argv) {
 					if (blackScreenDelay == 60) {
 						gameMode = gameModeBuffer;
 					}
-					swiWaitForVBlank();
 					break;
 				case 0:
 				default:
@@ -245,7 +241,7 @@ int main(int argc, char **argv) {
 			}
 		} else {
 			if (!textPrinted) {
-				printf("PDSX v0.3.0 by Robz8\n");
+				printf("PDSX v0.4.0 by RocketRobz\n");
 				printf("\n");
 				if (cursorPosition == 0) {
 					printf(">");
@@ -289,6 +285,8 @@ int main(int argc, char **argv) {
 				textPrinted = true;
 			}
 		}
+		simulationControls();
+		swiWaitForVBlank();
 	}
 
 	return 0;

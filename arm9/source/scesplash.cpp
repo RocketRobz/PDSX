@@ -149,7 +149,6 @@ void sceSplash(void) {
 	}
 
 	sce_loopOnLogo++;
-	swiWaitForVBlank();
 
 	if (sce_loopOnLogo == 60*6) {
 		sce_fadedin = false;

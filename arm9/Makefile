@@ -20,7 +20,7 @@ include $(DEVKITARM)/ds_rules
 TARGET		:=	PDSX
 BUILD		:=	build
 SOURCES		:=	source source/graphics
-INCLUDES	:=	include
+INCLUDES	:=	include include/graphics
 DATA		:=	../data  
 GRAPHICS	:=  ../gfx
 MUSIC       :=  ../music
@@ -28,7 +28,7 @@ MUSIC       :=  ../music
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-ARCH	:=	-mthumb -mthumb-interwork
+ARCH	:=	-marm -mthumb-interwork
 
 CFLAGS	:=	-g -Wall -O2\
  		-march=armv5te -mtune=arm946e-s -fomit-frame-pointer\
@@ -39,12 +39,12 @@ CFLAGS	+=	$(INCLUDE) -DARM9
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
 
 ASFLAGS	:=	-g $(ARCH)
-LDFLAGS	=	-specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
+LDFLAGS	=	-specs=../ds_arm9_hi.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project (order is important)
 #---------------------------------------------------------------------------------
-LIBS	:= 	-lmm9 -lgl2d -lnds9
+LIBS	:= 	-lmm9 -lnds9
  
  
 #---------------------------------------------------------------------------------

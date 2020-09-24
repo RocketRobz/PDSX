@@ -54,15 +54,17 @@
 extern int gameMode;
 extern int psConsoleModel;
 
+u16 blackBg[256*192] = {0};
+u16 blueBg[2][256*192] = {0};
+
 int sceLogoTexID, sceTmTexID, psxLogoTexID, playstationLogoTexID, sceaTexID;
-int blueBgTexID, blueBallsTexID, mainMenuTexID, inkedButtonTexID, memandcdTexID, menuCursorTexID;
+int blueBallsTexID, mainMenuTexID, inkedButtonTexID, memandcdTexID, menuCursorTexID;
 int gridBgTexID, memandcdButtonTexID, memCardTexID, cdTexID;
 glImage sceLogoImage[(128 / 16) * (96 / 24)];
 glImage sceTmImage[(16 / 16) * (16 / 16)];
 glImage psxLogoImage[(128 / 16) * (80 / 16)];
 glImage playstationLogoImage[(128 / 16) * (32 / 16)];
 glImage sceaImage[(256 / 16) * (64 / 16)];
-glImage blueBgImage[(128 / 16) * (192 / 16)];
 glImage gridBgImage[(256 / 16) * (192 / 16)];
 glImage blueBallsImage[(64 / 16) * (128 / 64)];
 glImage mainMenuImage[(128 / 16) * (32 / 16)];
@@ -72,6 +74,9 @@ glImage memandcdButtonImage[(128 / 16) * (64 / 24)];
 glImage memCardImage[(64 / 16) * (64 / 16)];
 glImage cdImage[(64 / 16) * (64 / 16)];
 glImage menuCursorImage[(16 / 16) * (32 / 16)];
+
+int bg3Main = 0;
+bool secondBuffer = false;
 
 void vramcpy_ui (void* dest, const void* src, int size) 
 {
@@ -152,19 +157,23 @@ void vBlankHandler()
 	glBegin2D();
 	{
 		if (gameMode == 1) {
+			dmaCopyHalfWordsAsynch(0, blackBg, bgGetGfxPtr(bg3Main), 0x18000);
 			psxGraphicDisplay();
 		} else if (gameMode == 2) {
 			if (psConsoleModel == 1) {
 				psoneMenuGraphicDisplay();
 			} else {
+				dmaCopyHalfWordsAsynch(0, blueBg[secondBuffer], bgGetGfxPtr(bg3Main), 0x18000);
 				psxMenuGraphicDisplay();
 			}
 		} else {
+			dmaCopyHalfWordsAsynch(0, blackBg, bgGetGfxPtr(bg3Main), 0x18000);
 			sceGraphicDisplay();
 		}
 	}
 	glEnd2D();
 	GFX_FLUSH = 0;
+	secondBuffer = !secondBuffer;
 }
 
 void graphicsInit()
@@ -180,16 +189,22 @@ void graphicsInit()
 	videoSetMode(MODE_5_3D);
 	//videoSetModeSub(MODE_5_2D);
 
-	// Initialize GL in 3D mode
+	// Initialize gl2d
 	glScreen2D();
+	// Make gl2d render on transparent stage.
+	glClearColor(31, 31, 31, 0);
+	glDisable(GL_CLEAR_BMP);
+
+	// Clear the GL texture state
+	glResetTextures();
 
 	// Set up enough texture memory for our textures
-	// Bank A is just 128kb and we are using 194 kb of
-	// sprites
-	// vramSetBankA(VRAM_A_TEXTURE);
 	vramSetBankB(VRAM_B_TEXTURE);
-	vramSetBankF(VRAM_F_TEX_PALETTE); // Allocate VRAM bank for all the palettes
 	vramSetBankE(VRAM_E_MAIN_BG);
+	vramSetBankF(VRAM_F_TEX_PALETTE);
+
+	bg3Main = bgInit(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
+	bgSetPriority(bg3Main, 0);
 
 	// Sony Computer Entertainment
 	sceLogoTexID = glLoadTileSet(sceLogoImage, // pointer to glImage array

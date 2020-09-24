@@ -41,7 +41,6 @@ void psxSplash(void) {
 			psx_textFadeColor = 255;
 		}
 	}
-	swiWaitForVBlank();
 }
 
 void psxGraphicDisplay(void) {

@@ -64,8 +64,6 @@ void powerButtonCB() {
 //---------------------------------------------------------------------------------
 int main() {
 //---------------------------------------------------------------------------------
-    nocashMessage("ARM7 main.c main");
-	
 	// clear sound registers
 	dmaFillWords(0, (void*)0x04000400, 0x100);
 
@@ -77,8 +75,6 @@ int main() {
 	ledBlink(0);
 
 	irqInit();
-	// Start the RTC tracking IRQ
-	initClockIRQ();
 	
 	fifoInit();
 	
@@ -98,7 +94,9 @@ int main() {
 	
 	// Keep the ARM7 mostly idle
 	while (!exitflag) {
-		// fifocheck();
+		if ( 0 == (REG_KEYINPUT & (KEY_SELECT | KEY_START | KEY_L | KEY_R))) {
+			exitflag = true;
+		}
 		swiWaitForVBlank();
 	}
 	return 0;
